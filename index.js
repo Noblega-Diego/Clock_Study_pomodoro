@@ -5,7 +5,7 @@ let clock_time = {
 }
 let is_time_study = true;
 let isPlay = false;
-let studyTime = {h:0,m:24,s:0}
+let studyTime = {h:0,m:25,s:0}
 let restTime = {h:0,m:5,s:0}
 const clock = document.querySelector("#clock");
 const clock_state = document.querySelector("#clock_state");
@@ -16,6 +16,7 @@ const configSave = document.querySelector("#config_save");
 const configButton = document.querySelector("#config_button");
 const inputStudy = document.querySelector("#input_study");
 const inputRest = document.querySelector("#input_relax");
+
 
 const parseTime = (timeValue) =>{
     const time = {
@@ -130,10 +131,27 @@ pause.addEventListener("click",(e)=>{
         isPlay = false;
     })
 
+
 {
+    document.addEventListener("DOMContentLoaded",()=>{
+        document.querySelectorAll('svg[data-src]').forEach(svg => {
+            fetch(svg.dataset.src)
+                .then(data=>data.text())
+                .then(xml=> {
+                    svg.innerHTML = xml;
+                    svg.querySelector("svg").classList.add("svg");
+                })
+        })
+
+    })
     changeInputTime(studyTime,inputStudy);
     changeInputTime(restTime,inputRest);
     changeClock(clock_time,clock);
+    const audio = document.createElement("audio");
+    audio.setAttribute("src", "media/audio/music_efect_258193__kodack__beep-beep.wav");
+    audio.loop = true;
+    audio.preload = "auto";
+    document.body.appendChild(audio);
     setInterval(()=>{
         if(isPlay){
             let time_total;
@@ -149,7 +167,15 @@ pause.addEventListener("click",(e)=>{
                 clock_time.m = 0;
                 clock_time.s = 0;
                 is_time_study = !is_time_study;
-
+                audio.play()
+                    .then(()=>{
+                        setTimeout(()=>{
+                            audio.pause();
+                        },1500);
+                    })
+                    .catch(()=>{
+                        console.log("error in sound");
+                    })
                 clock_state.textContent =  is_time_study? "Study time":"relax time"
             }
             changeClock(clock_time,clock);
